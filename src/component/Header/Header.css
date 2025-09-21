@@ -1,0 +1,171 @@
+/* Header background */
+.header {
+  color: rgb(61, 246, 0);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Logo with 3D effect */
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px #949494, 4px 4px 0px #3d3f3e;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.logo:hover {
+  transform: scale(1.6) rotate(-16deg);
+}
+
+/* Navigation menu */
+.nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  perspective: 800px;
+  padding: 0;
+}
+.nav ul li a {
+  text-decoration: none;
+  color: rgb(58, 240, 7);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.3s, transform 0.2s;
+}
+.nav ul li a:hover {
+  background: rgba(44, 176, 4, 0.2);
+  transform: scale(1.6) rotate(-17deg);
+}
+
+/* User Icon + Name */
+.auth-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Username style */
+.auth-icon span {
+  font-size: 20px;            /* bigger text */
+  font-weight: bold;
+  color: #30cf00;              /* bright green */
+  /* text-shadow: 1px 1px 2px #000, 0 0 6px #3cff00, 0 0 10px #3cff00; */
+  transition: transform 0.3s, text-shadow 0.3s;
+}
+
+/* Hover effect for username */
+.auth-icon:hover span {
+  transform: scale(1.3);
+  /* text-shadow: 1px 1px 2px #000, 0 0 10px #3cff00, 0 0 15px #3cff00, 0 0 20px #3cff00; */
+
+}
+
+/* User Icon */
+.auth-icon svg {
+  color: #3cff00;
+  transition: transform 0.3s, color 0.3s, text-shadow 0.3s;
+}
+.auth-icon:hover svg {
+  transform: scale(1.3);
+  color: #fff;
+  /* text-shadow: 0 0 8px #3cff00, 0 0 12px #3cff00; */
+}
+
+/* Username text */
+.user-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #3cff00;
+  text-shadow: 1px 1px 2px #000, 0 0 6px #3cff00, 0 0 10px #3cff00;
+  transition: transform 0.3s, text-shadow 0.3s;
+}
+
+.auth-icon:hover .user-name {
+  transform: scale(1.3);
+  text-shadow: 1px 1px 2px #000, 0 0 10px #3cff00, 0 0 15px #3cff00, 0 0 20px #3cff00;
+}
+
+/* Circle with initial */
+/* User Circle */
+.user-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #3cff00;
+  color: #000;
+  font-weight: bold;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  /* box-shadow: 0 0 6px #3cff00, 0 0 10px #3cff00; */
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.user-circle:hover {
+  transform: scale(1.2);
+  /* box-shadow: 0 0 10px #3cff00, 0 0 15px #3cff00; */
+}
+
+/* Dropdown menu */
+.auth-dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #000;
+  border: 1px solid #3cff00;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  z-index: 100;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+  padding: 10px;
+  color: #3cff00;
+  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  background-color: rgba(60, 255, 0, 0.2);
+}
+
+
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .nav ul {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 15px;
+    text-align: center;
+  }
+  .nav ul li {
+    margin: 10px 0;
+  }
+}

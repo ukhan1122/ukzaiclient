@@ -1,0 +1,109 @@
+.body-container {
+  padding: 30px;
+  background: #f9f9f9;
+  min-height: 100vh;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.product-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  padding: 0px;
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer; /* ✅ show clickable card */
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+}
+
+/* Keep Add to Cart button normal */
+.btn {
+  background: linear-gradient(45deg, #4caf50, #2e7d32);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: linear-gradient(45deg, #2e7d32, #4caf50);
+}
+
+
+
+/* Slide container */
+.slide-container {
+  width: 100%;
+  height: 170px; /* fixed height for uniformity */
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center; /* center the image horizontally */
+  align-items: center;     /* center the image vertically */
+}
+
+.slide-images {
+  display: flex;
+  transition: transform 1s ease-in-out; /* smooth slide effect */
+}
+
+.slide-images img {
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  object-fit: contain;  /* SHOW WHOLE IMAGE */
+  border-radius: 10px;
+  background: #f9f9f9;  /* optional: background for empty space */
+}
+
+.product-card h3 {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #222;
+}
+
+.price {
+  color: green;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.btn {
+  background: linear-gradient(45deg, #4caf50, #2e7d32);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: linear-gradient(45deg, #2e7d32, #4caf50);
+}

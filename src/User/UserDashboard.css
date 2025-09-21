@@ -1,0 +1,117 @@
+.user-dashboard-container {
+  padding: 40px 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f7f6;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  color: #28a745;
+  margin-bottom: 30px;
+}
+
+.dashboard-content {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* Left column: Personal Info */
+.personal-info {
+  flex: 1;
+  min-width: 250px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.personal-info h2 {
+  color: #218838;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #28a745;
+  padding-bottom: 5px;
+}
+
+.personal-info p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Right column: Orders */
+.user-orders {
+  flex: 2;
+  min-width: 400px;
+}
+
+.user-orders h2 {
+  color: #218838;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #28a745;
+  padding-bottom: 5px;
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.order-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #444;
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-item {
+  display: flex;
+  gap: 15px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 10px;
+  align-items: center;
+}
+
+.order-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.item-details h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #28a745;
+}
+
+.item-details p {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.no-orders {
+  text-align: center;
+  color: #555;
+  font-size: 16px;
+}
