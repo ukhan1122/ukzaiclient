@@ -16,7 +16,7 @@ const ManageProducts = () => {
   const [popupImage, setPopupImage] = useState(null);
 
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000/api/product";
+  const API_URL = "https://ukzai.onrender.com/api/product";
 
   const fetchProducts = async () => {
     try {
