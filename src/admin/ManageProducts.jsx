@@ -18,6 +18,12 @@ const ManageProducts = () => {
   const navigate = useNavigate();
   const API_URL = "https://ukzai.onrender.com/api/product";
 
+  // ✅ FIXED: Cache busting image URLs
+  const getImageUrl = (img) => {
+    if (!img) return '';
+    return img + '?v=' + Date.now();
+  };
+
   const fetchProducts = async () => {
     try {
       const res = await fetch(API_URL);
@@ -78,7 +84,14 @@ const ManageProducts = () => {
 
   const handleEdit = (product) => {
     setEditingProduct(product._id);
-    setEditForm({ name: product.name, price: product.price, stock: product.stock, description: product.description, images: [], existingImages: product.images || [] });
+    setEditForm({ 
+      name: product.name, 
+      price: product.price, 
+      stock: product.stock, 
+      description: product.description, 
+      images: [], 
+      existingImages: product.images || [] 
+    });
     setShowModal(true);
   };
 
@@ -104,16 +117,22 @@ const ManageProducts = () => {
     } catch { setError("Error updating product ❌"); }
   };
 
+  const handleImageClick = (images, index = 0) => {
+    setPopupImages(images);
+    setCurrentIndex(index);
+    setPopupImage(images[index]);
+  };
+
   const handleNext = () => {
     const nextIndex = (currentIndex + 1) % popupImages.length;
     setCurrentIndex(nextIndex);
-    setPopupImage(`http://localhost:5000/${popupImages[nextIndex]}`);
+    setPopupImage(popupImages[nextIndex]);
   };
 
   const handlePrev = () => {
     const prevIndex = (currentIndex - 1 + popupImages.length) % popupImages.length;
     setCurrentIndex(prevIndex);
-    setPopupImage(`http://localhost:5000/${popupImages[prevIndex]}`);
+    setPopupImage(popupImages[prevIndex]);
   };
 
   return (
@@ -151,10 +170,14 @@ const ManageProducts = () => {
                     {p.images.map((img, i) => (
                       <img
                         key={i}
-                        src={`http://localhost:5000/${img}`}
+                        src={getImageUrl(img)}
                         alt={p.name}
-                        onClick={() => navigate(`/product/${p._id}`)}
+                        onClick={() => handleImageClick(p.images, i)}
                         style={{ cursor: "pointer" }}
+                        onError={(e) => {
+                          console.log('Image failed to load:', img);
+                          e.target.style.display = 'none';
+                        }}
                       />
                     ))}
                   </div>
@@ -183,7 +206,6 @@ const ManageProducts = () => {
         </tbody>
       </table>
 
-      {/* Edit Modal */}
       {showModal && (
         <div className="modal">
           <div className="modal-content">
@@ -197,9 +219,14 @@ const ManageProducts = () => {
                 {editForm.existingImages.map((img, i) => (
                   <img 
                     key={i} 
-                    src={`http://localhost:5000/${img}`} 
+                    src={getImageUrl(img)}
                     alt={`existing-${i}`} 
-                    onClick={() => navigate(`/product/${editingProduct}`)}
+                    onClick={() => handleImageClick(editForm.existingImages, i)}
+                    style={{ cursor: "pointer" }}
+                    onError={(e) => {
+                      console.log('Existing image failed to load:', img);
+                      e.target.style.display = 'none';
+                    }}
                   />
                 ))}
               </div>
@@ -213,11 +240,10 @@ const ManageProducts = () => {
         </div>
       )}
 
-      {/* Image Popup */}
       {popupImage && (
         <div className="image-popup" onClick={() => setPopupImage(null)}>
           <button className="popup-btn left" onClick={(e) => { e.stopPropagation(); handlePrev(); }}>‹</button>
-          <img src={`http://localhost:5000/${popupImages[currentIndex]}`} alt="Preview" />
+          <img src={getImageUrl(popupImage)} alt="Preview" />
           <button className="popup-btn right" onClick={(e) => { e.stopPropagation(); handleNext(); }}>›</button>
           <div className="popup-close" onClick={() => setPopupImage(null)}>×</div>
         </div>

@@ -93,7 +93,9 @@ const Body = () => {
                       }}
                     >
                       {product.images.map((img, i) => (
-                        <img key={i} src={`http://localhost:5000/${img}`} alt={product.name} />
+                        // ✅ CHANGED: removed `http://localhost:5000/` because
+                        // Cloudinary already returns a full image URL
+                        <img key={i} src={img} alt={product.name} /> 
                       ))}
                     </div>
                   </div>

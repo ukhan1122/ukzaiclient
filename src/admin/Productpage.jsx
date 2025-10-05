@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CartContext } from "./Cartcontext"; // ✅ cart count context
+import { CartContext } from "./Cartcontext";
 import "./Productpage.css";
 
 const ProductPage = () => {
@@ -10,11 +10,18 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const { setCartCount } = useContext(CartContext);
 
-  // ✅ Fetch product details (dummy API for now)
+  const API_URL = "https://ukzai.onrender.com/api/product";
+
+  // ✅ FIXED: Cache busting image URLs
+  const getImageUrl = (img) => {
+    if (!img) return '';
+    return img + '?v=' + Date.now();
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/product/${id}`);
+        const res = await fetch(`${API_URL}/${id}`);
         const data = await res.json();
         setProduct(data);
       } catch (err) {
@@ -24,19 +31,14 @@ const ProductPage = () => {
     fetchProduct();
   }, [id]);
 
-  if (!product) return <p>Loading...</p>;
-
-  // ✅ Increase quantity
   const increaseQty = () => {
     if (quantity < product.stock) setQuantity((prev) => prev + 1);
   };
 
-  // ✅ Decrease quantity
   const decreaseQty = () => {
     if (quantity > 1) setQuantity((prev) => prev - 1);
   };
 
-  // ✅ Add to cart + Navigate to Cart page
   const handleAddToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const existingIndex = cart.findIndex((item) => item._id === product._id);
@@ -55,10 +57,10 @@ const ProductPage = () => {
 
     localStorage.setItem("cart", JSON.stringify(cart));
     setCartCount((prev) => prev + quantity);
-
-    // ✅ Navigate to cart page
     navigate("/cart");
   };
+
+  if (!product) return <p>Loading...</p>;
 
   return (
     <div className="product-page-container">
@@ -67,14 +69,17 @@ const ProductPage = () => {
       </button>
 
       <div className="product-detail">
-        {/* Images Gallery */}
         <div className="images-gallery">
           {product.images && product.images.length > 0 ? (
             product.images.map((img, i) => (
               <img
                 key={i}
-                src={`http://localhost:5000/${img}`}
+                src={getImageUrl(img)}
                 alt={`${product.name}-${i}`}
+                onError={(e) => {
+                  console.log('Product image failed to load:', img);
+                  e.target.style.display = 'none';
+                }}
               />
             ))
           ) : (
@@ -82,7 +87,6 @@ const ProductPage = () => {
           )}
         </div>
 
-        {/* Product Info */}
         <div className="product-info">
           <h2 className="product-name">{product.name}</h2>
 
