@@ -64,7 +64,7 @@ const CartPage = () => {
     try {
       const token = localStorage.getItem("token"); // ✅ JWT from login
 
-      const response = await fetch("http://localhost:5000/api/orders/create", {
+      const response = await fetch("https://ukzai.onrender.com/api/orders/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,8 @@ const CartPage = () => {
             name: item.name,
             price: item.price,
             quantity: item.quantity,
-            image: item.images[0],
+            // ✅ FIX: Handle undefined images
+            image: item.images && item.images[0] ? item.images[0] : '',
           })),
           totalPrice,
           shippingAddress: {
@@ -130,7 +131,12 @@ const CartPage = () => {
             {cartItems.length > 0 ? (
               cartItems.map((item, index) => (
                 <div className="cart-item" key={item._id}>
-                  <img src={`http://localhost:5000/${item.images[0]}`} alt={item.name} />
+                  {/* ✅ FIX: Handle empty images properly */}
+                  {item.images && item.images[0] ? (
+                    <img src={item.images[0]} alt={item.name} />
+                  ) : (
+                    <div className="no-image">No Image</div>
+                  )}
                   <div className="item-details">
                     <h3>{item.name}</h3>
                     <p className="price">Price: {item.price} PKR</p>
