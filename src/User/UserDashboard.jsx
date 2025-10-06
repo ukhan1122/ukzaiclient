@@ -12,29 +12,48 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem("token"); // get JWT
+        const token = localStorage.getItem("token");
         const res = await fetch("https://ukzai.onrender.com/api/orders/myorders", {
           headers: {
-            Authorization: `Bearer ${token}`, // ✅ send token
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
 
-        // Check if response is ok
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
 
         const data = await res.json();
         console.log("Fetched orders:", data);
-
-        setOrders(data || []); // ✅ Remove .orders since backend returns array directly
+        setOrders(data || []);
       } catch (err) {
         console.error("Error fetching orders:", err);
       }
     };
     fetchOrders();
   }, []);
+
+  // Function to get correct image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "https://via.placeholder.com/100";
+    
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    if (imagePath.startsWith('/')) {
+      return `https://ukzai.onrender.com${imagePath}`;
+    }
+    
+    return `https://ukzai.onrender.com/${imagePath}`;
+  };
+
+  // Format order ID for display
+  const formatOrderId = (orderId) => {
+    if (!orderId) return 'N/A';
+    return orderId.length > 12 ? `${orderId.substring(0, 12)}...` : orderId;
+  };
 
   return (
     <div className="user-dashboard-container">
@@ -61,27 +80,31 @@ const UserDashboard = () => {
             orders.map((order) => (
               <div className="order-card" key={order._id}>
                 <div className="order-header">
-                  <span>
-                    <strong>Order ID:</strong> {order._id}
+                  <span data-label="Order ID:">
+                    <strong>Order ID:</strong> {formatOrderId(order._id)}
                   </span>
-                  <span>
-                    <strong>Status:</strong> {order.status}
+                  <span data-label="Status:">
+                    <strong>Status:</strong> {order.status || 'Processing'}
                   </span>
-                  <span>
-                    <strong>Total:</strong> {order.totalPrice} PKR
+                  <span data-label="Total:">
+                    <strong>Total:</strong> {order.totalPrice?.toFixed(2) || '0.00'} PKR
                   </span>
                 </div>
                 <div className="order-items">
                   {order.items && order.items.map((item, index) => {
-                    console.log("Order item:", item); // ✅ debug log
-                    const imageUrl =
-                      item.images && item.images.length > 0
-                        ? `https://ukzai.onrender.com/${item.images[0]}` // ✅ Fixed URL
-                        : "https://via.placeholder.com/100"; // fallback
+                    const firstImage = item.images && item.images.length > 0 ? item.images[0] : null;
+                    const imageUrl = getImageUrl(firstImage);
 
                     return (
                       <div className="order-item" key={index}>
-                        <img src={imageUrl} alt={item.name} />
+                        <img 
+                          src={imageUrl} 
+                          alt={item.name} 
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/100";
+                          }}
+                          loading="lazy"
+                        />
                         <div className="item-details">
                           <h3>{item.name}</h3>
                           <p>Price: {item.price} PKR</p>

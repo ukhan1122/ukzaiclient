@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { FaUserCircle, FaShoppingCart } from "react-icons/fa";
+import { FaUserCircle, FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
 import { CartContext } from "../../admin/Cartcontext";
 import "./Header.css";
 
 const Header = () => {
   const [userName, setUserName] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartCount, setCartCount } = useContext(CartContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,18 +20,16 @@ const Header = () => {
       const user = JSON.parse(storedUser);
       setUserName(user.name || "");
 
-      // Check auto logout (1 hour = 3600000 ms)
       if (loginTime) {
         const now = Date.now();
         if (now - parseInt(loginTime, 10) > 3600000) {
-          handleLogout(); // auto logout
+          handleLogout();
         }
       }
     } else {
       setUserName("");
     }
 
-    // Hide cart count if on /cart page
     if (location.pathname === "/cart") {
       setCartCount(0);
     }
@@ -48,49 +47,48 @@ const Header = () => {
     setUserName("");
     setCartCount(0);
     setDropdownOpen(false);
+    setMobileMenuOpen(false);
     navigate("/login");
   };
 
   const handleCartClick = () => {
     navigate("/cart");
     setCartCount(0);
+    setMobileMenuOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+    setDropdownOpen(false);
+  };
+
+  const closeAllMenus = () => {
+    setMobileMenuOpen(false);
+    setDropdownOpen(false);
   };
 
   const userInitial = userName ? userName.charAt(0).toUpperCase() : null;
 
   return (
     <header className="header">
+      {/* Hamburger menu on left */}
+      <button className="menu-toggle" onClick={toggleMobileMenu}>
+        {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+
+      {/* Logo in center */}
       <div className="logo">
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }} onClick={closeAllMenus}>
           UKZAI
         </Link>
       </div>
 
-      <nav className="nav">
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/contact">Contact Us</Link></li>
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/shipping">Shipping</Link></li>
-          <li><Link to="/latest">Latest Product</Link></li>
-        </ul>
-      </nav>
-
-      <div className="auth-dropdown-container" style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-        <div className="cart-icon" onClick={handleCartClick} style={{ position: "relative", cursor: "pointer" }}>
+      {/* Auth section on right */}
+      <div className="auth-dropdown-container">
+        <div className="cart-icon" onClick={handleCartClick}>
           <FaShoppingCart size={28} color="#3cff00" />
           {cartCount > 0 && location.pathname !== "/cart" && (
-            <span style={{
-              position: "absolute",
-              top: "-8px",
-              right: "-10px",
-              background: "red",
-              color: "#fff",
-              fontSize: "14px",
-              fontWeight: "bold",
-              borderRadius: "50%",
-              padding: "2px 6px",
-            }}>
+            <span className="cart-count">
               {cartCount}
             </span>
           )}
@@ -102,11 +100,22 @@ const Header = () => {
 
         {dropdownOpen && userName && (
           <div className="dropdown-menu">
-            <Link to="/profile" onClick={() => setDropdownOpen(false)}>Profile</Link>
+            <Link to="/profile" onClick={closeAllMenus}>Profile</Link>
             <button onClick={handleLogout}>Logout</button>
           </div>
         )}
       </div>
+
+      {/* Navigation menu - appears below when hamburger is clicked */}
+      <nav className={`nav ${mobileMenuOpen ? 'active' : ''}`}>
+        <ul>
+          <li><Link to="/" onClick={closeAllMenus}>Home</Link></li>
+          <li><Link to="/contact" onClick={closeAllMenus}>Contact Us</Link></li>
+          <li><Link to="/about" onClick={closeAllMenus}>About</Link></li>
+          <li><Link to="/shipping" onClick={closeAllMenus}>Shipping</Link></li>
+          <li><Link to="/latest" onClick={closeAllMenus}>Latest Product</Link></li>
+        </ul>
+      </nav>
     </header>
   );
 };
