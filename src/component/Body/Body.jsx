@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { CartContext } from "../../admin/Cartcontext"; // ✅ import context
+import { CartContext } from "../../admin/Cartcontext";
 import "./Body.css";
 
 const Body = () => {
@@ -9,7 +9,7 @@ const Body = () => {
   const [hoveredIndex, setHoveredIndex] = useState({});
   const [intervals, setIntervals] = useState({});
   const navigate = useNavigate();
-  const { cartCount, setCartCount } = useContext(CartContext); // ✅ context
+  const { cartCount, setCartCount } = useContext(CartContext);
 
   const API_URL = "https://ukzai.onrender.com/api/product";
 
@@ -52,7 +52,7 @@ const Body = () => {
   };
 
   const handleAddToCart = (e, product) => {
-    e.stopPropagation(); // prevent card click navigation
+    e.stopPropagation();
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const existingIndex = cart.findIndex((item) => item._id === product._id);
@@ -64,7 +64,7 @@ const Body = () => {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    setCartCount(cartCount + 1); // ✅ increment header cart count
+    setCartCount(cartCount + 1);
   };
 
   return (
@@ -93,16 +93,26 @@ const Body = () => {
                       }}
                     >
                       {product.images.map((img, i) => (
-                        // ✅ CHANGED: removed `http://localhost:5000/` because
-                        // Cloudinary already returns a full image URL
                         <img key={i} src={img} alt={product.name} /> 
                       ))}
                     </div>
                   </div>
                 )}
                 <h3>{product.name}</h3>
-                <p className="price">Rs. {product.price}</p>
-                <p className="desc">{product.description}</p>
+                
+                {/* Price Section - Show regular price with strikethrough if available */}
+                {product.regularPrice ? (
+  <div className="price-section">
+    <p className="price">Rs. {product.price}</p>
+    <p className="regular-price">Rs. 600</p>
+  </div>
+) : (
+  <div className="price-section">
+    <p className="price">Rs. {product.price}</p>
+    <p className="regular-price">Rs. 600</p>
+  </div>
+)}
+                
                 <button className="btn" onClick={(e) => handleAddToCart(e, product)}>
                   Add to Cart
                 </button>

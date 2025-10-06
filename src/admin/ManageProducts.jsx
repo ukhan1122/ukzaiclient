@@ -99,13 +99,25 @@ const ManageProducts = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
+      
+      // ✅ FIXED: Send existing images AND new images
+      // Send existing images as string array
+      editForm.existingImages.forEach(img => formData.append("existingImages", img));
+      
+      // Send new images as files
       editForm.images.forEach(img => formData.append("images", img));
+      
+      // Send other fields
       formData.append("name", editForm.name);
       formData.append("price", editForm.price);
       formData.append("stock", editForm.stock);
       formData.append("description", editForm.description);
 
-      const res = await fetch(`${API_URL}/${editingProduct}`, { method: "PUT", body: formData });
+      const res = await fetch(`${API_URL}/${editingProduct}`, { 
+        method: "PUT", 
+        body: formData 
+      });
+      
       const data = await res.json();
       if (res.ok) { 
         setMessage(data.message || "Product updated successfully ✅"); 
@@ -216,6 +228,7 @@ const ManageProducts = () => {
               <input type="number" name="stock" value={editForm.stock} onChange={handleEditChange} required />
               <input type="text" name="description" value={editForm.description} onChange={handleEditChange} required />
               <div className="existing-images">
+                <p><strong>Current Images:</strong></p>
                 {editForm.existingImages.map((img, i) => (
                   <img 
                     key={i} 
@@ -230,7 +243,10 @@ const ManageProducts = () => {
                   />
                 ))}
               </div>
-              <input type="file" name="images" accept="image/*" multiple onChange={handleEditChange} />
+              <div className="new-images">
+                <p><strong>Add New Images (Optional):</strong></p>
+                <input type="file" name="images" accept="image/*" multiple onChange={handleEditChange} />
+              </div>
               <div className="modal-actions">
                 <button type="submit" className="btn update">Update</button>
                 <button type="button" className="btn cancel" onClick={() => setShowModal(false)}>Cancel</button>
