@@ -13,17 +13,22 @@ const UserDashboard = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("token"); // get JWT
-        const res = await fetch("https://ukzai.onrender.com/orders/myorders", {
+        const res = await fetch("https://ukzai.onrender.com/api/orders/myorders", {
           headers: {
             Authorization: `Bearer ${token}`, // ✅ send token
             "Content-Type": "application/json",
           },
         });
 
+        // Check if response is ok
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
         const data = await res.json();
         console.log("Fetched orders:", data);
 
-        setOrders(data.orders || []);
+        setOrders(data || []); // ✅ Remove .orders since backend returns array directly
       } catch (err) {
         console.error("Error fetching orders:", err);
       }
@@ -67,11 +72,11 @@ const UserDashboard = () => {
                   </span>
                 </div>
                 <div className="order-items">
-                  {order.items.map((item, index) => {
+                  {order.items && order.items.map((item, index) => {
                     console.log("Order item:", item); // ✅ debug log
                     const imageUrl =
                       item.images && item.images.length > 0
-                        ? `http://localhost:5000/${item.images[0]}`
+                        ? `https://ukzai.onrender.com/${item.images[0]}` // ✅ Fixed URL
                         : "https://via.placeholder.com/100"; // fallback
 
                     return (

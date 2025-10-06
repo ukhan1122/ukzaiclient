@@ -33,7 +33,7 @@ const AdminDashboard = () => {
             borderRadius: "8px",
             cursor: "pointer",
           }}
-          onClick={() => navigate("/admin/users")}
+          onClick={() => navigate("/admin/Order")}
         >
           Manage Users
         </button>

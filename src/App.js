@@ -10,6 +10,7 @@ import Body from './component/Body/Body';
 import Footer from './component/Footer/Footer';
 import Header from './component/Header/Header';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import OrderManagement from './admin/OrderManagement';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/profile" element={<UserDashboard />} /> {/* ✅ User Dashboard route */}
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<ManageProducts />} />
+          <Route path="/admin/Order" element={<OrderManagement/>}/>
         </Routes>
         <Footer />
       </Router>
