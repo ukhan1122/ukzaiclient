@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { FaUserCircle, FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
+import { FaUserCircle, FaShoppingCart, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import { CartContext } from "../../admin/Cartcontext";
 import "./Header.css";
 
@@ -100,62 +100,113 @@ const Header = () => {
 
   return (
     <header className="header">
-      {/* Hamburger menu on left */}
-      <button className="menu-toggle" onClick={toggleMobileMenu}>
-        {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-      </button>
+      <div className="header-container">
+        {/* Left: Hamburger menu for mobile */}
+        <button className="menu-toggle" onClick={toggleMobileMenu}>
+          {mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+        </button>
 
-      {/* Logo in center */}
-      <div className="logo">
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }} onClick={closeAllMenus}>
-          UKZAI
-        </Link>
-      </div>
+        {/* Center: Logo */}
+        <div className="logo-section">
+          <Link to="/" className="logo" onClick={closeAllMenus}>
+            <span className="logo-text">UKZAI</span>
+            {/* <span className="logo-subtitle">Premium Store</span> */}
+          </Link>
+        </div>
 
-      {/* Auth section on right */}
-      <div className="auth-dropdown-container">
-        <div className="cart-icon" onClick={handleCartClick}>
-          <FaShoppingCart size={28} color="#3cff00" />
-          {cartCount > 0 && location.pathname !== "/cart" && (
-            <span className="cart-count">
-              {cartCount}
-            </span>
+        {/* Desktop Navigation */}
+        <nav className="desktop-nav">
+          <ul>
+            <li><Link to="/" onClick={closeAllMenus}>Home</Link></li>
+            <li><Link to="/latest" onClick={closeAllMenus}>New Arrivals</Link></li>
+            <li><Link to="/shipping" onClick={closeAllMenus}>Shipping</Link></li>
+            <li><Link to="/about" onClick={closeAllMenus}>About</Link></li>
+            <li><Link to="/contact" onClick={closeAllMenus}>Contact</Link></li>
+          </ul>
+        </nav>
+
+        {/* Right: Auth Section */}
+        <div className="auth-section">
+          <div className="cart-icon" onClick={handleCartClick}>
+            <FaShoppingCart size={20} />
+            {cartCount > 0 && location.pathname !== "/cart" && (
+              <span className="cart-count">
+                {cartCount}
+              </span>
+            )}
+          </div>
+
+          <div className="user-profile" onClick={handleIconClick}>
+            <div className="user-avatar">
+              {userInitial ? userInitial : <FaUserCircle size={24} />}
+            </div>
+            {userName && (
+              <span className="user-name">{userName}</span>
+            )}
+            <FaChevronDown size={12} className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`} />
+          </div>
+
+          {dropdownOpen && userName && (
+            <div className="dropdown-menu">
+              <div className="dropdown-item" onClick={handleProfileClick}>
+                {userRole === "admin" ? "Admin Dashboard" : "My Account"}
+              </div>
+              <div className="dropdown-divider"></div>
+              <div className="dropdown-item" onClick={handleLogout}>
+                Sign Out
+              </div>
+            </div>
           )}
         </div>
-
-        <div className="user-circle" onClick={handleIconClick}>
-          {userInitial ? userInitial : <FaUserCircle size={32} />}
-        </div>
-
-        {dropdownOpen && userName && (
-          <div className="dropdown-menu">
-            <button onClick={handleProfileClick} style={{
-              background: "none",
-              border: "none",
-              color: "#3cff00",
-              textAlign: "left",
-              width: "100%",
-              padding: "10px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "bold"
-            }}>
-              {userRole === "admin" ? "Admin" : "Profile"}
-            </button>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        )}
       </div>
 
-      {/* Navigation menu - appears below when hamburger is clicked */}
-      <nav className={`nav ${mobileMenuOpen ? 'active' : ''}`}>
-        <ul>
-          <li><Link to="/" onClick={closeAllMenus}>Home</Link></li>
-          <li><Link to="/contact" onClick={closeAllMenus}>Contact Us</Link></li>
-          <li><Link to="/about" onClick={closeAllMenus}>About</Link></li>
-          <li><Link to="/shipping" onClick={closeAllMenus}>Shipping</Link></li>
-          <li><Link to="/latest" onClick={closeAllMenus}>Latest Product</Link></li>
-        </ul>
+      {/* Mobile Navigation */}
+      <nav className={`mobile-nav ${mobileMenuOpen ? 'active' : ''}`}>
+        <div className="mobile-nav-content">
+          <div className="mobile-user-info">
+            {userName ? (
+              <>
+                <div className="mobile-user-avatar">
+                  {userInitial ? userInitial : <FaUserCircle size={32} />}
+                </div>
+                <div className="mobile-user-details">
+                  <div className="mobile-user-name">{userName}</div>
+                  <div className="mobile-user-role">{userRole === 'admin' ? 'Administrator' : 'Customer'}</div>
+                </div>
+              </>
+            ) : (
+              <button 
+                className="mobile-login-btn"
+                onClick={() => {
+                  closeAllMenus();
+                  navigate("/login");
+                }}
+              >
+                Sign In
+              </button>
+            )}
+          </div>
+          
+          <ul className="mobile-nav-list">
+            <li><Link to="/" onClick={closeAllMenus}>Home</Link></li>
+            <li><Link to="/latest" onClick={closeAllMenus}>New Arrivals</Link></li>
+            <li><Link to="/shipping" onClick={closeAllMenus}>Shipping Info</Link></li>
+            <li><Link to="/about" onClick={closeAllMenus}>About Us</Link></li>
+            <li><Link to="/contact" onClick={closeAllMenus}>Contact</Link></li>
+            {userName && (
+              <>
+                <li><Link to={userRole === "admin" ? "/admin" : "/profile"} onClick={closeAllMenus}>
+                  {userRole === "admin" ? "Admin Dashboard" : "My Account"}
+                </Link></li>
+                <li>
+                  <button onClick={handleLogout} className="mobile-logout-btn">
+                    Sign Out
+                  </button>
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
       </nav>
     </header>
   );
