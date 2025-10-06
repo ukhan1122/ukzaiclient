@@ -69,7 +69,7 @@ const Body = () => {
 
   return (
     <div className="body-container">
-      <h2 className="section-title">Our Products</h2>
+      <h2 className="section-title"></h2>
       {error && <p className="error-message">{error}</p>}
       <div className="product-grid">
         {products.length > 0 ? (
