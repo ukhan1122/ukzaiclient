@@ -2,8 +2,10 @@ import React from "react";
 import "./Footer.css";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="footer">
+    <footer className="footer" role="contentinfo">
       <div className="footer-container">
         {/* About Section */}
         <div className="footer-section">
@@ -19,11 +21,11 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Quick Links</h3>
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/shop">Shop</a></li>
-            <li><a href="/categories">Categories</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><a href="/" aria-label="Go to homepage">Home</a></li>
+            <li><a href="/shop" aria-label="Browse our shop">Shop</a></li>
+            <li><a href="/categories" aria-label="View product categories">Categories</a></li>
+            <li><a href="/about" aria-label="Learn more about us">About</a></li>
+            <li><a href="/contact" aria-label="Contact us">Contact</a></li>
           </ul>
         </div>
 
@@ -31,25 +33,25 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Customer Service</h3>
           <ul>
-            <li><a href="/faq">FAQ</a></li>
-            <li><a href="/shipping">Shipping & Returns</a></li>
-            <li><a href="/privacy">Privacy Policy</a></li>
-            <li><a href="/terms">Terms & Conditions</a></li>
+            <li><a href="/faq" aria-label="Frequently asked questions">FAQ</a></li>
+            <li><a href="/shipping" aria-label="Shipping and returns information">Shipping & Returns</a></li>
+            <li><a href="/privacy" aria-label="Privacy policy">Privacy Policy</a></li>
+            <li><a href="/terms" aria-label="Terms and conditions">Terms & Conditions</a></li>
           </ul>
         </div>
 
         {/* Contact Info */}
         <div className="footer-section">
           <h3>Contact Us</h3>
-          <p>Email: support@ukzai.com</p>
-          <p>Phone: +92 3350888249 /3407939853</p>
+          <p>Email: explain816@gmail.com</p>
+          <p>Phone: +92 3350888249 / 3407939853</p>
           <p>Address: Lahore, Pakistan</p>
         </div>
       </div>
 
       {/* Bottom Footer */}
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Ukzai Store. All Rights Reserved.</p>
+        <p>© {currentYear} Ukzai Store. All Rights Reserved.</p>
       </div>
     </footer>
   );

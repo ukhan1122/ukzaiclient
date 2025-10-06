@@ -6,6 +6,7 @@ import "./Header.css";
 
 const Header = () => {
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartCount, setCartCount } = useContext(CartContext);
@@ -16,9 +17,24 @@ const Header = () => {
     const storedUser = localStorage.getItem("user");
     const loginTime = localStorage.getItem("loginTime");
 
+    console.log("Stored User:", storedUser);
+
     if (storedUser) {
       const user = JSON.parse(storedUser);
+      console.log("Parsed User:", user);
       setUserName(user.name || "");
+      
+      // Detect role - if no role field, check by email or name
+      let role = user.role;
+      if (!role) {
+        // Fallback: Check if user is admin by email or name
+        if (user.email === "explain816@gmail.com" || user.name === "Admin") {
+          role = "admin";
+        } else {
+          role = "user";
+        }
+      }
+      setUserRole(role);
 
       if (loginTime) {
         const now = Date.now();
@@ -28,6 +44,7 @@ const Header = () => {
       }
     } else {
       setUserName("");
+      setUserRole("");
     }
 
     if (location.pathname === "/cart") {
@@ -45,6 +62,7 @@ const Header = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("loginTime");
     setUserName("");
+    setUserRole("");
     setCartCount(0);
     setDropdownOpen(false);
     setMobileMenuOpen(false);
@@ -65,6 +83,17 @@ const Header = () => {
   const closeAllMenus = () => {
     setMobileMenuOpen(false);
     setDropdownOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    closeAllMenus();
+    console.log("User Role:", userRole);
+    // Navigate to admin dashboard if user is admin, otherwise to user profile
+    if (userRole === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/profile");
+    }
   };
 
   const userInitial = userName ? userName.charAt(0).toUpperCase() : null;
@@ -100,7 +129,19 @@ const Header = () => {
 
         {dropdownOpen && userName && (
           <div className="dropdown-menu">
-            <Link to="/profile" onClick={closeAllMenus}>Profile</Link>
+            <button onClick={handleProfileClick} style={{
+              background: "none",
+              border: "none",
+              color: "#3cff00",
+              textAlign: "left",
+              width: "100%",
+              padding: "10px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold"
+            }}>
+              {userRole === "admin" ? "Admin" : "Profile"}
+            </button>
             <button onClick={handleLogout}>Logout</button>
           </div>
         )}
