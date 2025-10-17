@@ -183,7 +183,11 @@ const OrderManagement = () => {
                 <div className="customer-details">
                   <p><strong>Name:</strong> {order.shippingAddress?.name || order.user?.name || 'N/A'}</p>
                   <p><strong>Email:</strong> {order.shippingAddress?.email || order.user?.email || 'N/A'}</p>
+                  {/* ✅ ADDED PHONE FIELD HERE */}
+                  <p><strong>Phone:</strong> {order.shippingAddress?.phone || order.user?.phone || 'N/A'}</p>
                   <p><strong>Address:</strong> {order.shippingAddress?.address || 'N/A'}</p>
+                  <p><strong>City:</strong> {order.shippingAddress?.city || 'N/A'}</p>
+                  <p><strong>Postal Code:</strong> {order.shippingAddress?.postalCode || 'N/A'}</p>
                 </div>
               </div>
 
