@@ -211,7 +211,7 @@ const UserDashboard = () => {
                               )}
                             </div>
                           </div>
-                        </div>
+                        </div>    
                         {order.shippingAddress.phone && (
                           <div className="shipping-row">
                             <span className="icon">📞</span>

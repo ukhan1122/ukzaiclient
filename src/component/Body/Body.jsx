@@ -214,7 +214,7 @@ const Body = () => {
             );
           })
         ) : (
-          <p className="no-products">No products found</p>
+          <p className="no-products">Loading products, please wait...</p>
         )}
       </div>
     </div>
