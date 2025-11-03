@@ -19,7 +19,8 @@ const ManageProducts = () => {
     description: "", 
     images: [], 
     existingImages: [],
-    imagesToDelete: []
+    imagesToDelete: [],
+    imagePrices: {} // NEW: Store prices for each image
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [message, setMessage] = useState("");
@@ -104,12 +105,27 @@ const ManageProducts = () => {
     }
   };
 
+  // NEW: Handle price change for individual images
+  const handleImagePriceChange = (imageUrl, price) => {
+    setEditForm(prev => ({
+      ...prev,
+      imagePrices: {
+        ...prev.imagePrices,
+        [imageUrl]: price
+      }
+    }));
+  };
+
   // Handle image deletion from existing images
   const handleDeleteImage = (imageToDelete) => {
     setEditForm(prev => ({
       ...prev,
       existingImages: prev.existingImages.filter(img => img !== imageToDelete),
-      imagesToDelete: [...prev.imagesToDelete, imageToDelete]
+      imagesToDelete: [...prev.imagesToDelete, imageToDelete],
+      // Remove price for deleted image
+      imagePrices: Object.fromEntries(
+        Object.entries(prev.imagePrices).filter(([key]) => key !== imageToDelete)
+      )
     }));
   };
 
@@ -178,6 +194,17 @@ const ManageProducts = () => {
 
   const handleEdit = (product) => {
     setEditingProduct(product._id);
+    
+    // Initialize image prices from product data or use main price as default
+    const initialImagePrices = {};
+    if (product.images && product.images.length > 0) {
+      product.images.forEach((img, index) => {
+        // If you have stored individual prices in your product data, use them
+        // Otherwise, use the main product price for all images
+        initialImagePrices[img] = product.imagePrices?.[img] || product.price;
+      });
+    }
+
     setEditForm({ 
       name: product.name, 
       price: product.price, 
@@ -185,7 +212,8 @@ const ManageProducts = () => {
       description: product.description, 
       images: [], 
       existingImages: product.images || [],
-      imagesToDelete: []
+      imagesToDelete: [],
+      imagePrices: initialImagePrices // NEW: Initialize image prices
     });
     setShowModal(true);
   };
@@ -204,6 +232,7 @@ const ManageProducts = () => {
       // Append arrays as JSON strings
       formData.append("existingImages", JSON.stringify(editForm.existingImages));
       formData.append("imagesToDelete", JSON.stringify(editForm.imagesToDelete));
+      formData.append("imagePrices", JSON.stringify(editForm.imagePrices)); // NEW: Send image prices
       
       // Append new images
       editForm.images.forEach(img => {
@@ -213,6 +242,7 @@ const ManageProducts = () => {
       console.log('🔄 Sending update with:', {
         existingImages: editForm.existingImages,
         imagesToDelete: editForm.imagesToDelete,
+        imagePrices: editForm.imagePrices,
         newImages: editForm.images.length
       });
 
@@ -350,16 +380,21 @@ const ManageProducts = () => {
                       {product.images && product.images.length > 0 ? (
                         <div className="manage-products-images-cell">
                           {product.images.map((img, index) => (
-                            <img
-                              key={index}
-                              src={getImageUrl(img)}
-                              alt={product.name}
-                              onClick={() => handleImageClick(product.images, index)}
-                              onError={(e) => {
-                                console.log('Image failed to load:', img);
-                                e.target.style.display = 'none';
-                              }}
-                            />
+                            <div key={index} className="manage-products-image-with-price">
+                              <img
+                                src={getImageUrl(img)}
+                                alt={product.name}
+                                onClick={() => handleImageClick(product.images, index)}
+                                onError={(e) => {
+                                  console.log('Image failed to load:', img);
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                              {/* Show individual price for each image */}
+                              <div className="manage-products-image-price">
+                                {product.imagePrices?.[img] || product.price} PKR
+                              </div>
+                            </div>
                           ))}
                         </div>
                       ) : (
@@ -427,7 +462,7 @@ const ManageProducts = () => {
                 <input 
                   type="number" 
                   name="price" 
-                  placeholder="Price"
+                  placeholder="Base Price"
                   value={editForm.price} 
                   onChange={handleEditChange} 
                   required 
@@ -452,7 +487,7 @@ const ManageProducts = () => {
                 />
                 
                 <div className="manage-products-existing-images">
-                  <p><strong>Current Images:</strong> <span style={{fontSize: '12px', color: '#666'}}>(Click × to delete)</span></p>
+                  <p><strong>Current Images:</strong> <span style={{fontSize: '12px', color: '#666'}}>(Set individual prices for each image)</span></p>
                   {editForm.existingImages.length > 0 ? (
                     editForm.existingImages.map((img, index) => (
                       <div 
@@ -476,6 +511,19 @@ const ManageProducts = () => {
                         >
                           ×
                         </button>
+                        {/* Individual price input for each image */}
+                        <div className="manage-products-image-price-input">
+                          <label>Price for this image:</label>
+                          <input
+                            type="number"
+                            value={editForm.imagePrices[img] || editForm.price}
+                            onChange={(e) => handleImagePriceChange(img, e.target.value)}
+                            min="0"
+                            step="0.01"
+                            placeholder="Individual price"
+                          />
+                          <span>PKR</span>
+                        </div>
                       </div>
                     ))
                   ) : (

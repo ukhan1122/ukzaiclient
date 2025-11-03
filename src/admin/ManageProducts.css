@@ -1,4 +1,4 @@
-/* ManageProducts.css - Fixed Table Display with Image Delete Features */
+/* ManageProducts.css - Fixed Table Display with Image Delete Features & Individual Prices */
 .manage-products-page {
   background: white !important;
   min-height: 80vh;
@@ -348,6 +348,63 @@
   color: #333;
 }
 
+/* Individual Image Price Styles - NEW */
+.manage-products-image-with-price {
+  position: relative;
+  display: inline-block;
+  margin: 5px;
+  text-align: center;
+}
+
+.manage-products-image-price {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  z-index: 5;
+}
+
+.manage-products-image-price-input {
+  margin-top: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.manage-products-image-price-input label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.manage-products-image-price-input input {
+  width: 100px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  background: white;
+}
+
+.manage-products-image-price-input span {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #666;
+  font-weight: bold;
+}
+
 /* Modal */
 .manage-products-modal {
   position: fixed;
@@ -367,7 +424,7 @@
   background: #fff !important;
   padding: 25px;
   border-radius: 8px;
-  width: 500px;
+  width: 600px; /* Increased width for price inputs */
   max-width: 95%;
   max-height: 90vh;
   overflow-y: auto;
@@ -522,6 +579,10 @@
     padding: 10px !important;
     font-size: 13px !important;
   }
+  
+  .manage-products-modal-content {
+    width: 500px;
+  }
 }
 
 /* Mobile Responsive */
@@ -544,5 +605,56 @@
     width: 18px;
     height: 18px;
     font-size: 12px;
+  }
+  
+  .manage-products-modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .manage-products-image-price-input input {
+    width: 80px;
+    font-size: 11px;
+  }
+  
+  .manage-products-image-price {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .manage-products-container {
+    padding: 10px;
+    margin: 10px auto;
+  }
+  
+  .manage-products-container h1 {
+    font-size: 20px;
+  }
+  
+  .manage-products-form {
+    gap: 8px;
+  }
+  
+  .manage-products-form input, 
+  .manage-products-form textarea {
+    flex: 1 1 100%;
+    font-size: 12px;
+  }
+  
+  .manage-products-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .manage-products-image-price-input {
+    padding: 6px;
+  }
+  
+  .manage-products-image-price-input input {
+    width: 70px;
+    padding: 4px 6px;
   }
 }
