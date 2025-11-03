@@ -51,20 +51,48 @@ const Body = () => {
     setHoveredIndex((prev) => ({ ...prev, [product._id]: 0 }));
   };
 
-  const handleAddToCart = (e, product) => {
+  const handleAddToCart = (e, product, currentImageIndex = 0) => {
     e.stopPropagation();
 
+    // Get the current image being displayed
+    const currentImage = product.images?.[currentImageIndex];
+    
+    // Get the price for the current image, fallback to product price
+    const price = currentImage && product.imagePrices?.[currentImage] 
+      ? product.imagePrices[currentImage] 
+      : product.price;
+
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingIndex = cart.findIndex((item) => item._id === product._id);
+    
+    // Create a unique ID based on product ID and image to treat different images as separate items
+    const cartItemId = `${product._id}-${currentImageIndex}`;
+    
+    const existingIndex = cart.findIndex((item) => item.cartItemId === cartItemId);
 
     if (existingIndex >= 0) {
       cart[existingIndex].quantity += 1;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ 
+        ...product, 
+        cartItemId,
+        quantity: 1,
+        selectedImage: currentImage,
+        selectedImageIndex: currentImageIndex,
+        price: price // Use the individual image price
+      });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
     setCartCount(cartCount + 1);
+  };
+
+  // Function to get price for current image
+  const getCurrentImagePrice = (product, currentImageIndex) => {
+    const currentImage = product.images?.[currentImageIndex];
+    if (currentImage && product.imagePrices?.[currentImage]) {
+      return product.imagePrices[currentImage];
+    }
+    return product.price;
   };
 
   return (
@@ -169,6 +197,8 @@ const Body = () => {
         {products.length > 0 ? (
           products.map((product) => {
             const currentIndex = hoveredIndex[product._id] || 0;
+            const currentPrice = getCurrentImagePrice(product, currentIndex);
+            
             return (
               <div
                 className="product-card"
@@ -187,28 +217,46 @@ const Body = () => {
                       }}
                     >
                       {product.images.map((img, i) => (
-                        <img key={i} src={img} alt={product.name} /> 
+                        <div key={i} className="slide-image-wrapper">
+                          <img src={img} alt={product.name} />
+                          {/* Show individual price for each image */}
+                          <div className="image-price-tag">
+                            Rs. {product.imagePrices?.[img] || product.price}
+                          </div>
+                        </div>
                       ))}
                     </div>
+                    {/* Image counter */}
+                    {product.images.length > 1 && (
+                      <div className="image-counter">
+                        {currentIndex + 1} / {product.images.length}
+                      </div>
+                    )}
                   </div>
                 )}
                 <h3>{product.name}</h3>
                 
-                {/* Price Section - Show regular price with strikethrough if available */}
-                {product.regularPrice ? (
-                  <div className="price-section">
-                    <p className="price">Rs. {product.price}</p>
-                    <p className="regular-price">Rs. 600</p>
-                  </div>
-                ) : (
-                  <div className="price-section">
-                    <p className="price">Rs. {product.price}</p>
-                    <p className="regular-price">Rs. 600</p>
+                {/* Dynamic Price Section */}
+                <div className="price-section">
+                  <p className="price">Rs. {currentPrice}</p>
+                  {/* Show strikethrough if there's a regular price */}
+                  {product.regularPrice && (
+                    <p className="regular-price">Rs. {product.regularPrice}</p>
+                  )}
+                </div>
+                
+                {/* Package info if multiple images */}
+                {product.images && product.images.length > 1 && (
+                  <div className="package-info">
+                    {currentIndex === 0 ? "Single Pack" : "5-Pack Bundle"}
                   </div>
                 )}
                 
-                <button className="btn" onClick={(e) => handleAddToCart(e, product)}>
-                  Add to Cart
+                <button 
+                  className="btn" 
+                  onClick={(e) => handleAddToCart(e, product, currentIndex)}
+                >
+                  Add to Cart - Rs. {currentPrice}
                 </button>
               </div>
             );
