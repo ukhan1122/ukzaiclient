@@ -20,7 +20,7 @@ const ManageProducts = () => {
     images: [], 
     existingImages: [],
     imagesToDelete: [],
-    imagePrices: {} // NEW: Store prices for each image
+    imagePrices: {}
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [message, setMessage] = useState("");
@@ -105,13 +105,13 @@ const ManageProducts = () => {
     }
   };
 
-  // NEW: Handle price change for individual images
+  // Handle price change for individual images - ensure it's stored as number
   const handleImagePriceChange = (imageUrl, price) => {
     setEditForm(prev => ({
       ...prev,
       imagePrices: {
         ...prev.imagePrices,
-        [imageUrl]: price
+        [imageUrl]: Number(price) // Convert to number immediately
       }
     }));
   };
@@ -213,7 +213,7 @@ const ManageProducts = () => {
       images: [], 
       existingImages: product.images || [],
       imagesToDelete: [],
-      imagePrices: initialImagePrices // NEW: Initialize image prices
+      imagePrices: initialImagePrices
     });
     setShowModal(true);
   };
@@ -229,10 +229,16 @@ const ManageProducts = () => {
       formData.append("stock", editForm.stock);
       formData.append("description", editForm.description);
       
+      // Convert all image prices to numbers before sending
+      const numericImagePrices = {};
+      Object.keys(editForm.imagePrices).forEach(img => {
+        numericImagePrices[img] = Number(editForm.imagePrices[img]);
+      });
+      
       // Append arrays as JSON strings
       formData.append("existingImages", JSON.stringify(editForm.existingImages));
       formData.append("imagesToDelete", JSON.stringify(editForm.imagesToDelete));
-      formData.append("imagePrices", JSON.stringify(editForm.imagePrices)); // NEW: Send image prices
+      formData.append("imagePrices", JSON.stringify(numericImagePrices)); // Use numeric prices
       
       // Append new images
       editForm.images.forEach(img => {
@@ -242,7 +248,7 @@ const ManageProducts = () => {
       console.log('🔄 Sending update with:', {
         existingImages: editForm.existingImages,
         imagesToDelete: editForm.imagesToDelete,
-        imagePrices: editForm.imagePrices,
+        imagePrices: numericImagePrices, // Now all numbers
         newImages: editForm.images.length
       });
 
@@ -257,7 +263,7 @@ const ManageProducts = () => {
         setMessage(data.message || "Product updated successfully ✅"); 
         setShowModal(false); 
         setEditingProduct(null); 
-        fetchProducts(); // Refresh the products list
+        fetchProducts(); 
       } else {
         setError(data.message || "Failed to update product ❌");
         console.error('Update failed:', data);
