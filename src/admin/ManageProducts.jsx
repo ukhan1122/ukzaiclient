@@ -18,7 +18,8 @@ const ManageProducts = () => {
     stock: "", 
     description: "", 
     images: [], 
-    existingImages: [] 
+    existingImages: [],
+    imagesToDelete: [] // New state to track images to delete
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [message, setMessage] = useState("");
@@ -103,6 +104,21 @@ const ManageProducts = () => {
     }
   };
 
+  // NEW FUNCTION: Handle image deletion from existing images
+  const handleDeleteImage = (imageToDelete) => {
+    setEditForm(prev => ({
+      ...prev,
+      existingImages: prev.existingImages.filter(img => img !== imageToDelete),
+      imagesToDelete: [...prev.imagesToDelete, imageToDelete] // Track deleted images
+    }));
+  };
+
+  // NEW FUNCTION: Handle image drop/remove via drag and drop
+  const handleImageDrop = (e, imageToDelete) => {
+    e.preventDefault();
+    handleDeleteImage(imageToDelete);
+  };
+
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
@@ -174,7 +190,8 @@ const ManageProducts = () => {
       stock: product.stock, 
       description: product.description, 
       images: [], 
-      existingImages: product.images || [] 
+      existingImages: product.images || [],
+      imagesToDelete: [] // Reset images to delete
     });
     setShowModal(true);
   };
@@ -184,12 +201,19 @@ const ManageProducts = () => {
     try {
       const formData = new FormData();
       
+      // Append existing images that are not deleted
       editForm.existingImages.forEach(img => {
         formData.append("existingImages", img);
       });
       
+      // Append new images
       editForm.images.forEach(img => {
         formData.append("images", img);
+      });
+      
+      // Append images to delete
+      editForm.imagesToDelete.forEach(img => {
+        formData.append("imagesToDelete", img);
       });
       
       formData.append("name", editForm.name);
@@ -432,19 +456,35 @@ const ManageProducts = () => {
                 />
                 
                 <div className="manage-products-existing-images">
-                  <p><strong>Current Images:</strong></p>
+                  <p><strong>Current Images:</strong> <span style={{fontSize: '12px', color: '#666'}}>(Click to view, Drag down to delete)</span></p>
                   {editForm.existingImages.length > 0 ? (
                     editForm.existingImages.map((img, index) => (
-                      <img 
+                      <div 
                         key={index} 
-                        src={getImageUrl(img)}
-                        alt={`existing-${index}`} 
-                        onClick={() => handleImageClick(editForm.existingImages, index)}
-                        onError={(e) => {
-                          console.log('Existing image failed to load:', img);
-                          e.target.style.display = 'none';
-                        }}
-                      />
+                        className="manage-products-image-container"
+                        draggable="true"
+                        onDragStart={(e) => e.dataTransfer.setData('text/plain', img)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => handleImageDrop(e, img)}
+                      >
+                        <img 
+                          src={getImageUrl(img)}
+                          alt={`existing-${index}`} 
+                          onClick={() => handleImageClick(editForm.existingImages, index)}
+                          onError={(e) => {
+                            console.log('Existing image failed to load:', img);
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                        <button 
+                          type="button"
+                          className="manage-products-remove-image"
+                          onClick={() => handleDeleteImage(img)}
+                          title="Delete image"
+                        >
+                          ×
+                        </button>
+                      </div>
                     ))
                   ) : (
                     <p>No existing images</p>

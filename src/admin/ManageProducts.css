@@ -1,4 +1,4 @@
-/* ManageProducts.css - Fixed Table Display */
+/* ManageProducts.css - Fixed Table Display with Image Delete Features */
 .manage-products-page {
   background: white !important;
   min-height: 80vh;
@@ -131,6 +131,38 @@
 .manage-products-btn.cancel { background: #6c757d !important; color: #fff !important; }
 .manage-products-btn.cancel:hover { background: #5a6268 !important; }
 
+/* Image Delete Button */
+.manage-products-remove-image {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.manage-products-image-container:hover .manage-products-remove-image {
+  opacity: 1;
+}
+
+.manage-products-remove-image:hover {
+  background: #c82333 !important;
+  transform: scale(1.1);
+}
+
 /* Table Container */
 .manage-products-table-container {
   width: 100%;
@@ -247,6 +279,24 @@
   transform: scale(1.1);
 }
 
+/* Image Container with Delete Button */
+.manage-products-image-container {
+  position: relative;
+  display: inline-block;
+  margin: 5px;
+  transition: all 0.3s ease;
+  cursor: grab;
+}
+
+.manage-products-image-container:active {
+  cursor: grabbing;
+}
+
+.manage-products-image-container.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
 .manage-products-existing-images {
   display: flex !important;
   gap: 5px;
@@ -256,6 +306,34 @@
   padding-bottom: 5px;
   flex-wrap: wrap;
   background: white;
+  min-height: 60px;
+  border: 1px dashed #ccc !important;
+  border-radius: 6px;
+  padding: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.manage-products-existing-images.drag-over {
+  border-color: #dc3545 !important;
+  background-color: #fff5f5 !important;
+}
+
+/* Delete Zone */
+.manage-products-delete-zone {
+  border: 2px dashed #dc3545 !important;
+  background: #fff5f5 !important;
+  padding: 20px;
+  text-align: center;
+  margin: 10px 0;
+  border-radius: 8px;
+  color: #dc3545;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.manage-products-delete-zone.drag-over {
+  background: #ffe6e6 !important;
+  transform: scale(1.02);
 }
 
 /* New Images Section */
@@ -459,5 +537,12 @@
     font-size: 12px !important;
     white-space: nowrap;
     min-width: 80px;
+  }
+  
+  .manage-products-remove-image {
+    opacity: 1 !important; /* Always show on mobile */
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
   }
 }
