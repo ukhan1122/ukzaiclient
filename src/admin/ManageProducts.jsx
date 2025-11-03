@@ -19,7 +19,7 @@ const ManageProducts = () => {
     description: "", 
     images: [], 
     existingImages: [],
-    imagesToDelete: [] // New state to track images to delete
+    imagesToDelete: []
   });
   const [editingProduct, setEditingProduct] = useState(null);
   const [message, setMessage] = useState("");
@@ -104,19 +104,13 @@ const ManageProducts = () => {
     }
   };
 
-  // NEW FUNCTION: Handle image deletion from existing images
+  // Handle image deletion from existing images
   const handleDeleteImage = (imageToDelete) => {
     setEditForm(prev => ({
       ...prev,
       existingImages: prev.existingImages.filter(img => img !== imageToDelete),
-      imagesToDelete: [...prev.imagesToDelete, imageToDelete] // Track deleted images
+      imagesToDelete: [...prev.imagesToDelete, imageToDelete]
     }));
-  };
-
-  // NEW FUNCTION: Handle image drop/remove via drag and drop
-  const handleImageDrop = (e, imageToDelete) => {
-    e.preventDefault();
-    handleDeleteImage(imageToDelete);
   };
 
   const handleAdd = async (e) => {
@@ -191,7 +185,7 @@ const ManageProducts = () => {
       description: product.description, 
       images: [], 
       existingImages: product.images || [],
-      imagesToDelete: [] // Reset images to delete
+      imagesToDelete: []
     });
     setShowModal(true);
   };
@@ -201,25 +195,26 @@ const ManageProducts = () => {
     try {
       const formData = new FormData();
       
-      // Append existing images that are not deleted
-      editForm.existingImages.forEach(img => {
-        formData.append("existingImages", img);
-      });
+      // Append text fields
+      formData.append("name", editForm.name);
+      formData.append("price", editForm.price);
+      formData.append("stock", editForm.stock);
+      formData.append("description", editForm.description);
+      
+      // Append arrays as JSON strings
+      formData.append("existingImages", JSON.stringify(editForm.existingImages));
+      formData.append("imagesToDelete", JSON.stringify(editForm.imagesToDelete));
       
       // Append new images
       editForm.images.forEach(img => {
         formData.append("images", img);
       });
-      
-      // Append images to delete
-      editForm.imagesToDelete.forEach(img => {
-        formData.append("imagesToDelete", img);
+
+      console.log('🔄 Sending update with:', {
+        existingImages: editForm.existingImages,
+        imagesToDelete: editForm.imagesToDelete,
+        newImages: editForm.images.length
       });
-      
-      formData.append("name", editForm.name);
-      formData.append("price", editForm.price);
-      formData.append("stock", editForm.stock);
-      formData.append("description", editForm.description);
 
       const res = await fetch(`${API_URL}/${editingProduct}`, { 
         method: "PUT", 
@@ -232,9 +227,10 @@ const ManageProducts = () => {
         setMessage(data.message || "Product updated successfully ✅"); 
         setShowModal(false); 
         setEditingProduct(null); 
-        fetchProducts(); 
+        fetchProducts(); // Refresh the products list
       } else {
         setError(data.message || "Failed to update product ❌");
+        console.error('Update failed:', data);
       }
     } catch (err) {
       console.error("Update error:", err);
@@ -456,16 +452,12 @@ const ManageProducts = () => {
                 />
                 
                 <div className="manage-products-existing-images">
-                  <p><strong>Current Images:</strong> <span style={{fontSize: '12px', color: '#666'}}>(Click to view, Drag down to delete)</span></p>
+                  <p><strong>Current Images:</strong> <span style={{fontSize: '12px', color: '#666'}}>(Click × to delete)</span></p>
                   {editForm.existingImages.length > 0 ? (
                     editForm.existingImages.map((img, index) => (
                       <div 
                         key={index} 
                         className="manage-products-image-container"
-                        draggable="true"
-                        onDragStart={(e) => e.dataTransfer.setData('text/plain', img)}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => handleImageDrop(e, img)}
                       >
                         <img 
                           src={getImageUrl(img)}
@@ -500,6 +492,11 @@ const ManageProducts = () => {
                     multiple 
                     onChange={handleEditChange} 
                   />
+                </div>
+
+                {/* Debug info for testing */}
+                <div style={{fontSize: '12px', color: '#666', margin: '10px 0'}}>
+                  <strong>Debug:</strong> {editForm.existingImages.length} images remaining, {editForm.imagesToDelete.length} images to delete
                 </div>
                 
                 <div className="manage-products-modal-actions">
