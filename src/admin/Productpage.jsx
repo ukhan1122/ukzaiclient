@@ -179,9 +179,9 @@ Intense spicy chicken flavor with authentic Korean gochugaru (red pepper) and go
       cart[existingIndex].quantity += quantity;
     } else {
       cart.push({
-        _id: product._id,
-        name: product.name,
-        price: product.price,
+        _id: product._id, 
+         name: selectedImage === 1 ? `${product.name} 5 Pack` : product.name, // updated title
+         price: selectedImage === 1 ? 2500 : product.price, // updated price
         images: product.images,
         quantity,
       });
@@ -190,7 +190,6 @@ Intense spicy chicken flavor with authentic Korean gochugaru (red pepper) and go
     localStorage.setItem("cart", JSON.stringify(cart));
     setCartCount((prev) => prev + quantity);
     
-    alert(`✅ ${quantity} ${product.name} added to cart!`);
     navigate("/cart");
   };
 
@@ -258,20 +257,22 @@ Intense spicy chicken flavor with authentic Korean gochugaru (red pepper) and go
         </div>
 
         {/* Product Information */}
-        <div className="product-info">
-          <div className="product-header">
-            <h1 className="product-title">{product.name}</h1>
-            <div className="product-rating">
-              <span className="stars">★★★★★</span>
-              <span className="rating-text">(4.8/5)</span>
-            </div>
-          </div>
+      <div className="product-info">
+  <div className="product-header">
+     <h1 className="product-title">
+      {product.name}{" "}
+      {selectedImage === 1 && (
+        <span style={{ color: "red" }}>5 Pack</span>
+      )}
+    </h1>
+    <div className="product-rating">
+      <span className="stars">★★★★★</span>
+      <span className="rating-text">(4.8/5)</span>
+    </div>
+</div>
 
-          <div className="price-section">
-            <div className="current-price">{product.price} PKR</div>
-            <div className="price-note">Inclusive of all taxes</div>
-          </div>
 
+       
           {/* Key Features Quick Overview */}
           <div className="key-features">
             <h4>Quick Features</h4>
@@ -312,18 +313,20 @@ Intense spicy chicken flavor with authentic Korean gochugaru (red pepper) and go
             </div>
           </div>
 
-          <div className="total-section">
-            <div className="total-label">Total Amount:</div>
-            <div className="total-amount">{(product.price * quantity).toFixed(2)} PKR</div>
-          </div>
+        
 
-          {/* Single Add to Cart Button */}
-          <div className="action-buttons">
-            <button className="btn primary-btn add-to-cart" onClick={handleAddToCart}>
-              <span className="btn-icon">🛒</span>
-              Add {quantity} to Cart - {(product.price * quantity).toFixed(2)} PKR
-            </button>
-          </div>
+      
+<div className="action-buttons">
+  <button
+    className="btn primary-btn add-to-cart"
+    onClick={handleAddToCart}
+  >
+    <span className="btn-icon">🛒</span>
+    Add {quantity} to Cart - {selectedImage === 1
+      ? (2500 * quantity).toFixed(2) + ' PKR'
+      : (product.price * quantity).toFixed(2) + ' PKR'}
+  </button>
+</div>
 
           {/* Product Description */}
           <div className="description-section">

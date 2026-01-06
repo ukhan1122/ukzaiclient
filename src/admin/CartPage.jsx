@@ -337,8 +337,15 @@ const CartPage = () => {
                   </div>
                   
                   <div className="item-details">
-                    <h3>{item.name}</h3>
-                    <p className="price">₨{item.price}</p>
+                 <h3 className="item-title">
+  {item.name.includes("5 Pack") ? (
+    <>
+      {item.name.replace(" 5 Pack", "")} <span style={{ color: "red" }}>5 Pack</span>
+    </>
+  ) : (
+    item.name
+  )}
+</h3>
                     
                     <div className="quantity-control">
                       <div className="qty-selector">

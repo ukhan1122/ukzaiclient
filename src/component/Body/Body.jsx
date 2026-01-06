@@ -95,6 +95,14 @@ const Body = () => {
     return product.price;
   };
 
+  // Function to get package info for current image
+  const getPackageInfo = (product, currentImageIndex) => {
+    if (product.images && product.images.length > 1) {
+      return currentImageIndex === 0 ? "Single Pack" : "5-Pack Bundle";
+    }
+    return "Single Pack";
+  };
+
   return (
     <div className="body-container">
       {/* Promotional Banner */}
@@ -198,6 +206,7 @@ const Body = () => {
           products.map((product) => {
             const currentIndex = hoveredIndex[product._id] || 0;
             const currentPrice = getCurrentImagePrice(product, currentIndex);
+            const packageInfo = getPackageInfo(product, currentIndex);
             
             return (
               <div
@@ -219,9 +228,9 @@ const Body = () => {
                       {product.images.map((img, i) => (
                         <div key={i} className="slide-image-wrapper">
                           <img src={img} alt={product.name} />
-                          {/* Show individual price for each image */}
-                          <div className="image-price-tag">
-                            Rs. {product.imagePrices?.[img] || product.price}
+                          {/* Show package info for each image */}
+                          <div className="image-package-tag">
+                            {getPackageInfo(product, i)}
                           </div>
                         </div>
                       ))}
@@ -240,17 +249,10 @@ const Body = () => {
                 <div className="price-section">
                   <p className="price">Rs. {currentPrice}</p>
                   {/* Show strikethrough if there's a regular price */}
-                  {product.regularPrice && (
+                  {product.regularPrice && product.regularPrice > currentPrice && (
                     <p className="regular-price">Rs. {product.regularPrice}</p>
                   )}
                 </div>
-                
-                {/* Package info if multiple images */}
-                {product.images && product.images.length > 1 && (
-                  <div className="package-info">
-                    {currentIndex === 0 ? "Single Pack" : "5-Pack Bundle"}
-                  </div>
-                )}
                 
                 <button 
                   className="btn" 
