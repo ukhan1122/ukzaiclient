@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { CartContext } from "../admin/Cartcontext";
+import { CartContext } from "./Cartcontext";
+import API_URL from "../config";
 import "./Cart.css";
 
 const CartPage = () => {
@@ -19,41 +20,42 @@ const CartPage = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
   const navigate = useNavigate();
-  const { setCartCount } = useContext(CartContext);
-
+  const { cartItems: contextCartItems, cartCount, setCartCount } = useContext(CartContext);
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(storedCart);
+  setCartItems(contextCartItems); // always sync with context
+}, [contextCartItems]);
 
-    const total = storedCart.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
-    setTotalPrice(total);
 
-    setCartCount(storedCart.reduce((acc, item) => acc + item.quantity, 0));
+// 🔥 Debug: log the context cart items
+  console.log("Cart context items:", contextCartItems);
+useEffect(() => {
+  // Sync cart items from context
+  setCartItems(contextCartItems);
+  const total = contextCartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  setTotalPrice(total);
+  setCartCount(contextCartItems.reduce((acc, item) => acc + item.quantity, 0));
 
-    // Check if user is logged in
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Please login to place your order");
-      return;
-    }
+  // Load user info from localStorage
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setError("Please login to place your order");
+    return;
+  }
 
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      // Ensure all user fields have values, even if undefined in storage
-      setUser({
-        name: userData.name || "",
-        email: userData.email || "",
-        address: userData.address || "",
-        city: userData.city || "",
-        postalCode: userData.postalCode || "",
-        phone: userData.phone || ""
-      });
-    }
-  }, [setCartCount]);
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    const userData = JSON.parse(storedUser);
+    setUser({
+      name: userData.name || "",
+      email: userData.email || "",
+      address: userData.address || "",
+      city: userData.city || "",
+      postalCode: userData.postalCode || "",
+      phone: userData.phone || ""
+    });
+  }
+}, [contextCartItems, setCartCount]);
+
 
   const increaseQty = (index) => {
     const updated = [...cartItems];
@@ -141,7 +143,7 @@ const CartPage = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       setError("Please login to place your order");
-      navigate("/login");
+navigate("/login", { state: { from: "/cart" } });
       return;
     }
 
@@ -161,7 +163,7 @@ const CartPage = () => {
 
     try {
       
-      const response = await fetch("https://ukzai.onrender.com/api/orders/create", {
+const response = await fetch(`${API_URL}/api/orders/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,7 +189,7 @@ const CartPage = () => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           setError("Session expired. Please login again.");
-          navigate("/login");
+navigate("/login", { state: { from: "/cart" } });
           return;
         }
         throw new Error(data.message || "Failed to place order");
@@ -219,23 +221,6 @@ const CartPage = () => {
     setOrderDetails(null);
     navigate("/");
   };
-
-  if (!localStorage.getItem("token")) {
-    return (
-      <div className="cart-page-container">
-        <div className="login-required">
-          <h2>Login Required</h2>
-          <p>Please login to view your cart and place orders</p>
-          <button 
-            className="btn primary" 
-            onClick={() => navigate("/login")}
-          >
-            Login Now
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // Show order confirmation if order was placed
   if (orderPlaced && orderDetails) {
@@ -309,7 +294,7 @@ const CartPage = () => {
           {error.includes("login") && (
             <button 
               className="btn-link" 
-              onClick={() => navigate("/login")}
+onClick={() => navigate("/login", { state: { from: "/cart" } })}
             >
               Login here
             </button>

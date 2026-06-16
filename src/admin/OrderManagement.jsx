@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_URL from "../config";
 import "./OrderManagement.css";
 
 const OrderManagement = () => {
@@ -15,7 +16,7 @@ const OrderManagement = () => {
       const token = localStorage.getItem("token");
       console.log("🔹 Fetching orders with token:", token);
       
-      const response = await fetch("https://ukzai.onrender.com/api/orders", {
+const response = await fetch(`${API_URL}/api/orders`, {
         headers: {
           "Authorization": token,
           "Content-Type": "application/json"
@@ -44,7 +45,7 @@ const OrderManagement = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`https://ukzai.onrender.com/api/orders/${orderId}`, {
+const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

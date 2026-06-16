@@ -1,89 +1,90 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import API_URL from "../config";
 import "./Auth.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const [message,  setMessage]  = useState("");
+  const [loading,  setLoading]  = useState(false);
+  const [msgType,  setMsgType]  = useState("error");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from     = location.state?.from || "/";
+
+  const handleChange = (e) =>
+    setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
+    setMessage("");
     try {
-      const res = await fetch("https://ukzai.onrender.com/api/auth/login", {
+      const res  = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
 
       if (res.ok) {
         const { token, user, role } = data;
-
-        // Save token and user data
         localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        // ✅ Log everything to console
-        console.log("User Data:", user);
-        console.log("Token:", token);
-        console.log("Role:", role);
-
-        setMessage("✅ Login successful!");
-
-        // Navigate based on role
-        if (role === "admin") navigate("/admin");
-        else navigate("/");
+        localStorage.setItem("user",  JSON.stringify(user));
+        localStorage.setItem("role",  role);
+        setMsgType("success");
+        setMessage("Login successful! Redirecting...");
+        setTimeout(() => navigate(role === "admin" ? "/admin" : from), 800);
       } else {
-        setMessage(data.message || "❌ Login failed");
-        console.error("Login failed:", data.message);
+        setMsgType("error");
+        setMessage(data.message || "Login failed. Please check your credentials.");
       }
-    } catch (err) {
-      console.error("Error during login:", err);
-      setMessage("❌ Something went wrong");
+    } catch {
+      setMsgType("error");
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <div className="auth-logo">MyApp</div>
-        <h2>Login</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <span className="auth-logo">UKZAI</span>
+          <p className="auth-tagline">Pakistan's hottest noodles 🔥</p>
+        </div>
 
-        <input
-          className="auth-input"
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+        <h2 className="auth-title">Welcome back</h2>
+        <p className="auth-sub">Sign in to your account</p>
 
-        <input
-          className="auth-input"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="auth-field">
+            <label className="auth-label">Email Address</label>
+            <input className="auth-input" type="email" name="email"
+              placeholder="you@example.com" value={formData.email}
+              onChange={handleChange} required />
+          </div>
 
-        <button className="auth-btn" type="submit">Login</button>
+          <div className="auth-field">
+            <label className="auth-label">Password</label>
+            <input className="auth-input" type="password" name="password"
+              placeholder="••••••••" value={formData.password}
+              onChange={handleChange} required />
+          </div>
 
-        {message && <p className="auth-message">{message}</p>}
+          {message && <div className={`auth-message ${msgType}`}>{message}</div>}
+
+          <button className="auth-btn" type="submit" disabled={loading}>
+            {loading ? <span className="auth-spinner"></span> : "Sign In"}
+          </button>
+        </form>
 
         <p className="auth-switch">
-          Don’t have an account? <Link to="/signup">Signup</Link>
+          Don't have an account? <Link to="/signup">Create one</Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 };

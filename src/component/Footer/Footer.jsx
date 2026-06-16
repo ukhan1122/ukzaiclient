@@ -1,57 +1,65 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="footer" role="contentinfo">
-      <div className="footer-container">
-        {/* About Section */}
-        <div className="footer-section">
-          <h3>About Us</h3>
-          <p>
-            Welcome to <strong>Ukzai Store</strong>, your one-stop shop for
-            stylish and affordable products. We bring you the best deals every
-            day.
+    <footer className="footer">
+      <div className="footer-top">
+
+        {/* Brand */}
+        <div className="footer-brand">
+          <span className="footer-logo">UKZAI</span>
+          <p className="footer-brand-desc">
+            Pakistan's #1 destination for authentic Korean Buldak noodles.
+            Delivered fresh to your door in Lahore & Karachi.
           </p>
+          <div className="footer-socials">
+            <a href="https://wa.me/923407939853" target="_blank" rel="noreferrer" className="social-btn">💬 WhatsApp</a>
+            <a href="mailto:explain816@gmail.com" className="social-btn">✉️ Email</a>
+          </div>
         </div>
 
         {/* Quick Links */}
-        <div className="footer-section">
-          <h3>Quick Links</h3>
-          <ul>
-            <li><a href="/" aria-label="Go to homepage">Home</a></li>
-            <li><a href="/shop" aria-label="Browse our shop">Shop</a></li>
-            <li><a href="/categories" aria-label="View product categories">Categories</a></li>
-            <li><a href="/about" aria-label="Learn more about us">About</a></li>
-            <li><a href="/contact" aria-label="Contact us">Contact</a></li>
+        <div className="footer-col">
+          <h4 className="footer-heading">Shop</h4>
+          <ul className="footer-links">
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/latest">New Arrivals</Link></li>
+            <li><Link to="/cart">Cart</Link></li>
+            <li><Link to="/profile">My Orders</Link></li>
           </ul>
         </div>
 
-        {/* Customer Service */}
-        <div className="footer-section">
-          <h3>Customer Service</h3>
-          <ul>
-            <li><a href="/faq" aria-label="Frequently asked questions">FAQ</a></li>
-            <li><a href="/shipping" aria-label="Shipping and returns information">Shipping & Returns</a></li>
-            <li><a href="/privacy" aria-label="Privacy policy">Privacy Policy</a></li>
-            <li><a href="/terms" aria-label="Terms and conditions">Terms & Conditions</a></li>
+        {/* Help */}
+        <div className="footer-col">
+          <h4 className="footer-heading">Help</h4>
+          <ul className="footer-links">
+            <li><Link to="/shipping">Shipping Info</Link></li>
+            <li><Link to="/faq">FAQ</Link></li>
+            <li><Link to="/privacy">Privacy Policy</Link></li>
+            <li><Link to="/terms">Terms & Conditions</Link></li>
           </ul>
         </div>
 
-        {/* Contact Info */}
-        <div className="footer-section">
-          <h3>Contact Us</h3>
-          <p>Email: explain816@gmail.com</p>
-          <p>Phone: +92 3350888249 / 3407939853</p>
-          <p>Address: Lahore, Pakistan</p>
+        {/* Contact */}
+        <div className="footer-col">
+          <h4 className="footer-heading">Contact</h4>
+          <ul className="footer-contact">
+            <li>📞 +92 335 0888249</li>
+            <li>📞 +92 340 7939853</li>
+            <li>📍 Lahore, Pakistan</li>
+          </ul>
         </div>
+
       </div>
 
-      {/* Bottom Footer */}
+      {/* Bottom */}
       <div className="footer-bottom">
-        <p>© {currentYear} Ukzai Store. All Rights Reserved.</p>
+        <p>© {year} UKZAI Store. All rights reserved.</p>
+        <p className="footer-made">Made with 🔥 in Pakistan</p>
       </div>
     </footer>
   );

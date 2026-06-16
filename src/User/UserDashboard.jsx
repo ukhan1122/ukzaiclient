@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_URL from "../config";
 import "./UserDashboard.css";
 
 const UserDashboard = () => {
@@ -33,7 +34,7 @@ const UserDashboard = () => {
         }
 
         // Fetch orders
-        const res = await fetch("https://ukzai.onrender.com/api/orders/myorders", {
+const res = await fetch(`${API_URL}/api/orders/myorders`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -66,10 +67,10 @@ const UserDashboard = () => {
     }
     
     if (imagePath.startsWith('/')) {
-      return `https://ukzai.onrender.com${imagePath}`;
+return `${API_URL}${imagePath}`;
     }
     
-    return `https://ukzai.onrender.com/${imagePath}`;
+return `${API_URL}${imagePath}`;
   };
 
   // Format date

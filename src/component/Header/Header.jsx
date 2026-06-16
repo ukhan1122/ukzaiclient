@@ -1,138 +1,106 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { FaUserCircle, FaShoppingCart, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
-import { CartContext } from "../../admin/Cartcontext";
+import { CartContext } from "../../pages/Cartcontext";
 import "./Header.css";
 
 const Header = () => {
-  const [userName, setUserName] = useState("");
-  const [userRole, setUserRole] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userName,       setUserName]       = useState("");
+  const [userRole,       setUserRole]       = useState("");
+  const [dropdownOpen,   setDropdownOpen]   = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartCount, setCartCount } = useContext(CartContext);
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const loginTime = localStorage.getItem("loginTime");
-
-    console.log("Stored User:", storedUser);
-
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      console.log("Parsed User:", user);
-      setUserName(user.name || "");
-      
-      // Detect role - if no role field, check by email or name
-      let role = user.role;
-      if (!role) {
-        // Fallback: Check if user is admin by email or name
-        if (user.email === "explain816@gmail.com" || user.name === "Admin") {
-          role = "admin";
-        } else {
-          role = "user";
-        }
-      }
-      setUserRole(role);
-
-      if (loginTime) {
-        const now = Date.now();
-        if (now - parseInt(loginTime, 10) > 3600000) {
-          handleLogout();
-        }
-      }
-    } else {
-      setUserName("");
-      setUserRole("");
-    }
-
-    if (location.pathname === "/cart") {
-      setCartCount(0);
-    }
-  }, [location.pathname, setCartCount]);
-
-  const handleIconClick = () => {
-    if (!userName) navigate("/login");
-    else setDropdownOpen(!dropdownOpen);
-  };
-
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("loginTime");
+    localStorage.removeItem("role");
     setUserName("");
     setUserRole("");
     setCartCount(0);
     setDropdownOpen(false);
     setMobileMenuOpen(false);
     navigate("/login");
-  };
+  }, [navigate, setCartCount]);
 
-  const handleCartClick = () => {
-    navigate("/cart");
-    setCartCount(0);
-    setMobileMenuOpen(false);
-  };
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const loginTime  = localStorage.getItem("loginTime");
+    const storedRole = localStorage.getItem("role");
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-    setDropdownOpen(false);
-  };
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserName(user.name || "");
 
-  const closeAllMenus = () => {
-    setMobileMenuOpen(false);
-    setDropdownOpen(false);
-  };
+      let role = storedRole || user.role;
+      if (!role) {
+        role = (user.email === "explain816@gmail.com" || user.name === "Admin") ? "admin" : "user";
+      }
+      setUserRole(role);
 
-  const handleProfileClick = () => {
-    closeAllMenus();
-    console.log("User Role:", userRole);
-    // Navigate to admin dashboard if user is admin, otherwise to user profile
-    if (userRole === "admin") {
-      navigate("/admin");
+      if (loginTime && Date.now() - parseInt(loginTime, 10) > 3600000) {
+        handleLogout();
+      }
     } else {
-      navigate("/profile");
+      setUserName("");
+      setUserRole("");
     }
-  };
+
+    if (location.pathname === "/cart") setCartCount(0);
+  }, [location.pathname, setCartCount, handleLogout]);
+
+  const closeAllMenus   = () => { setMobileMenuOpen(false); setDropdownOpen(false); };
+  const handleCartClick = () => { navigate("/cart"); setCartCount(0); setMobileMenuOpen(false); };
+  const handleIconClick = () => { if (!userName) navigate("/login"); else setDropdownOpen(o => !o); };
+  const handleProfile   = () => { closeAllMenus(); navigate(userRole === "admin" ? "/admin" : "/profile"); };
 
   const userInitial = userName ? userName.charAt(0).toUpperCase() : null;
 
   return (
     <header className="header">
       <div className="header-container">
-        {/* Left: Hamburger menu for mobile */}
-        <button className="menu-toggle" onClick={toggleMobileMenu}>
+
+        {/* Hamburger */}
+        <button className="menu-toggle" onClick={() => { setMobileMenuOpen(o => !o); setDropdownOpen(false); }}>
           {mobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
         </button>
 
-        {/* Center: Logo */}
+        {/* Logo */}
         <div className="logo-section">
           <Link to="/" className="logo" onClick={closeAllMenus}>
             <span className="logo-text">UKZAI</span>
-            {/* <span className="logo-subtitle">Premium Store</span> */}
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Nav */}
         <nav className="desktop-nav">
           <ul>
-            <li><Link to="/" onClick={closeAllMenus}>Home</Link></li>
-            <li><Link to="/latest" onClick={closeAllMenus}>New Arrivals</Link></li>
-            <li><Link to="/shipping" onClick={closeAllMenus}>Shipping</Link></li>
-            <li><Link to="/about" onClick={closeAllMenus}>About</Link></li>
-            <li><Link to="/contact" onClick={closeAllMenus}>Contact</Link></li>
+            {[
+              { to:"/",        label:"Home"        },
+              { to:"/latest",  label:"New Arrivals" },
+              { to:"/shipping",label:"Shipping"     },
+              { to:"/about",   label:"About"        },
+              { to:"/contact", label:"Contact"      },
+            ].map(item => (
+              <li key={item.to}>
+                <Link to={item.to} onClick={closeAllMenus}
+                  className={location.pathname === item.to ? "nav-active" : ""}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
-        {/* Right: Auth Section */}
+        {/* Auth */}
         <div className="auth-section">
           <div className="cart-icon" onClick={handleCartClick}>
             <FaShoppingCart size={20} />
             {cartCount > 0 && location.pathname !== "/cart" && (
-              <span className="cart-count">
-                {cartCount}
-              </span>
+              <span className="cart-count">{cartCount}</span>
             )}
           </div>
 
@@ -140,28 +108,24 @@ const Header = () => {
             <div className="user-avatar">
               {userInitial ? userInitial : <FaUserCircle size={24} />}
             </div>
-            {userName && (
-              <span className="user-name">{userName}</span>
-            )}
-            <FaChevronDown size={12} className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`} />
+            {userName && <span className="user-name">{userName}</span>}
+            <FaChevronDown size={12} className={`dropdown-arrow ${dropdownOpen ? "open" : ""}`} />
           </div>
 
           {dropdownOpen && userName && (
             <div className="dropdown-menu">
-              <div className="dropdown-item" onClick={handleProfileClick}>
+              <div className="dropdown-item" onClick={handleProfile}>
                 {userRole === "admin" ? "Admin Dashboard" : "My Account"}
               </div>
               <div className="dropdown-divider"></div>
-              <div className="dropdown-item" onClick={handleLogout}>
-                Sign Out
-              </div>
+              <div className="dropdown-item logout" onClick={handleLogout}>Sign Out</div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <nav className={`mobile-nav ${mobileMenuOpen ? 'active' : ''}`}>
+      {/* Mobile Nav */}
+      <nav className={`mobile-nav ${mobileMenuOpen ? "active" : ""}`}>
         <div className="mobile-nav-content">
           <div className="mobile-user-info">
             {userName ? (
@@ -171,37 +135,35 @@ const Header = () => {
                 </div>
                 <div className="mobile-user-details">
                   <div className="mobile-user-name">{userName}</div>
-                  <div className="mobile-user-role">{userRole === 'admin' ? 'Administrator' : 'Customer'}</div>
+                  <div className="mobile-user-role">{userRole === "admin" ? "Administrator" : "Customer"}</div>
                 </div>
               </>
             ) : (
-              <button 
-                className="mobile-login-btn"
-                onClick={() => {
-                  closeAllMenus();
-                  navigate("/login");
-                }}
-              >
+              <button className="mobile-login-btn" onClick={() => { closeAllMenus(); navigate("/login"); }}>
                 Sign In
               </button>
             )}
           </div>
-          
+
           <ul className="mobile-nav-list">
-            <li><Link to="/" onClick={closeAllMenus}>Home</Link></li>
-            <li><Link to="/latest" onClick={closeAllMenus}>New Arrivals</Link></li>
-            <li><Link to="/shipping" onClick={closeAllMenus}>Shipping Info</Link></li>
-            <li><Link to="/about" onClick={closeAllMenus}>About Us</Link></li>
-            <li><Link to="/contact" onClick={closeAllMenus}>Contact</Link></li>
+            {[
+              { to:"/",        label:"Home"         },
+              { to:"/latest",  label:"New Arrivals"  },
+              { to:"/shipping",label:"Shipping Info" },
+              { to:"/about",   label:"About Us"      },
+              { to:"/contact", label:"Contact"       },
+            ].map(item => (
+              <li key={item.to}><Link to={item.to} onClick={closeAllMenus}>{item.label}</Link></li>
+            ))}
             {userName && (
               <>
-                <li><Link to={userRole === "admin" ? "/admin" : "/profile"} onClick={closeAllMenus}>
-                  {userRole === "admin" ? "Admin Dashboard" : "My Account"}
-                </Link></li>
                 <li>
-                  <button onClick={handleLogout} className="mobile-logout-btn">
-                    Sign Out
-                  </button>
+                  <Link to={userRole === "admin" ? "/admin" : "/profile"} onClick={closeAllMenus}>
+                    {userRole === "admin" ? "Admin Dashboard" : "My Account"}
+                  </Link>
+                </li>
+                <li>
+                  <button className="mobile-logout-btn" onClick={handleLogout}>Sign Out</button>
                 </li>
               </>
             )}

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { CartProvider } from "./admin/Cartcontext";
+import { CartProvider } from './pages/Cartcontext';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
